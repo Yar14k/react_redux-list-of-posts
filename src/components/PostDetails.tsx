@@ -3,7 +3,10 @@ import { Loader } from './Loader';
 import { NewCommentForm } from './NewCommentForm';
 import { useDispatch, useSelector } from 'react-redux';
 import * as commentsApi from '../api/comments';
-import { setCommentsError, setCommentsLoaded } from '../features/counter/AppSlice';
+import {
+  setCommentsError,
+  setCommentsLoaded,
+} from '../features/counter/AppSlice';
 
 import { Post } from '../types/Post';
 import { CommentData } from '../types/Comment';
@@ -17,23 +20,25 @@ type Props = {
 export const PostDetails: React.FC<Props> = ({ post }) => {
   const comments = useSelector((state: RootState) => state.app.comments.items);
   const loaded = useSelector((state: RootState) => state.app.comments.loaded);
-  const hasError = useSelector((state: RootState) => state.app.comments.hasError);
+  const hasError = useSelector(
+    (state: RootState) => state.app.comments.hasError,
+  );
   const [visible, setVisible] = useState(false);
   const dispatch = useDispatch();
 
   function loadComments() {
-    dispatch(setCommentsLoaded(false))
+    dispatch(setCommentsLoaded(false));
     dispatch(setCommentsError(false));
     setVisible(false);
 
     commentsApi
       .getPostComments(post.id)
-      .then(comments => dispatch(setComments(comments))) // save the loaded comments
+      .then(postComments => dispatch(setComments(postComments))) // save the loaded comments
       .catch(() => dispatch(setCommentsError(true))) // show an error when something went wrong
       .finally(() => dispatch(setCommentsLoaded(true))); // hide the spinner
   }
 
-  useEffect(loadComments, [post.id]);
+  useEffect(loadComments, [post.id, dispatch]); // we need to reload the comments when the post is changed
 
   // The same useEffect with async/await
   /*
@@ -86,9 +91,7 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
     // we delete the comment immediately so as
     // not to make the user wait long for the actual deletion
     // eslint-disable-next-line max-len
-    dispatch(setComments(
-      comments.filter(comment => comment.id !== commentId),
-    ));
+    dispatch(setComments(comments.filter(comment => comment.id !== commentId)));
 
     await commentsApi.deleteComment(commentId);
   };

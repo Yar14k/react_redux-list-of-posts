@@ -13,7 +13,14 @@ import { getUserPosts } from './api/posts';
 
 import { RootState } from './app/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPosts, setPostsLoaded, setPostsError, setSelectedPost, setAuthor, setUsers } from './features/counter/AppSlice';
+import {
+  setPosts,
+  setPostsLoaded,
+  setPostsError,
+  setSelectedPost,
+  setAuthor,
+  setUsers,
+} from './features/counter/AppSlice';
 import { getUsers } from './api/users';
 
 export const App: React.FC = () => {
@@ -22,35 +29,34 @@ export const App: React.FC = () => {
   const hasError = useSelector((state: RootState) => state.app.posts.hasError);
 
   const author = useSelector((state: RootState) => state.app.author);
-  const selectedPost = useSelector((state: RootState) => state.app.selectedPost);
+  const selectedPost = useSelector(
+    (state: RootState) => state.app.selectedPost,
+  );
   const dispatch = useDispatch();
-   
+
   useEffect(() => {
-  getUsers()
-    .then(users => dispatch(setUsers(users)));
-}, []);
-
-  function loadUserPosts(userId: number) {
-    dispatch(setPostsLoaded(false));
-
-    getUserPosts(userId)
-      .then(posts => dispatch(setPosts(posts)))
-      .catch(() =>  dispatch(setPostsError(true)))
-      // We disable the spinner in any case
-      .finally(() => dispatch(setPostsLoaded(true)));
-  }
+    getUsers().then(users => dispatch(setUsers(users)));
+  }, [dispatch]);
 
   useEffect(() => {
     // we clear the post when an author is changed
     // not to confuse the user
-    dispatch(setSelectedPost((null)));
+    dispatch(setSelectedPost(null));
 
-    if (author) {
-      loadUserPosts(author.id);
-    } else {
+    if (!author) {
       dispatch(setPosts([]));
+
+      return;
     }
-  }, [author]);
+
+    dispatch(setPostsLoaded(false));
+
+    getUserPosts(author?.id || 0)
+      .then(userPosts => dispatch(setPosts(userPosts)))
+      .catch(() => dispatch(setPostsError(true)))
+      // We disable the spinner in any case
+      .finally(() => dispatch(setPostsLoaded(true)));
+  }, [author, dispatch]);
 
   return (
     <main className="section">
@@ -59,7 +65,10 @@ export const App: React.FC = () => {
           <div className="tile is-parent">
             <div className="tile is-child box is-success">
               <div className="block">
-                <UserSelector value={author} onChange={(user) => dispatch(setAuthor(user))} />
+                <UserSelector
+                  value={author}
+                  onChange={user => dispatch(setAuthor(user))}
+                />
               </div>
 
               <div className="block" data-cy="MainContent">
@@ -86,7 +95,7 @@ export const App: React.FC = () => {
                   <PostsList
                     posts={posts}
                     selectedPostId={selectedPost?.id}
-                    onPostSelected={(post) => dispatch(setSelectedPost(post))}
+                    onPostSelected={post => dispatch(setSelectedPost(post))}
                   />
                 )}
               </div>
