@@ -39,8 +39,6 @@ export const App: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // we clear the post when an author is changed
-    // not to confuse the user
     dispatch(setSelectedPost(null));
 
     if (!author) {
@@ -54,7 +52,6 @@ export const App: React.FC = () => {
     getUserPosts(author?.id || 0)
       .then(userPosts => dispatch(setPosts(userPosts)))
       .catch(() => dispatch(setPostsError(true)))
-      // We disable the spinner in any case
       .finally(() => dispatch(setPostsLoaded(true)));
   }, [author, dispatch]);
 

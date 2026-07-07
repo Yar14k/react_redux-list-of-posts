@@ -35,36 +35,10 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
       .getPostComments(post.id)
       .then(postComments => dispatch(setComments(postComments)))
       .catch(() => dispatch(setCommentsError(true)))
-      .finally(() => dispatch(setCommentsLoaded(true))); 
+      .finally(() => dispatch(setCommentsLoaded(true)));
   }
 
   useEffect(loadComments, [post.id, dispatch]);
-
-  // The same useEffect with async/await
-  /*
-  async function loadComments() {
-    setLoaded(false);
-    setVisible(false);
-    setError(false);
-
-    try {
-      const commentsFromServer = await commentsApi.getPostComments(post.id);
-
-      setComments(commentsFromServer);
-    } catch (error) {
-      setError(true);
-    } finally {
-      setLoaded(true);
-    }
-  };
-
-  useEffect(() => {
-    loadComments();
-  }, []);
-
-  useEffect(loadComments, [post.id]); // Wrong!
-  // effect can return only a function but not a Promise
-  */
 
   const addComment = async ({ name, email, body }: CommentData) => {
     try {
@@ -74,22 +48,13 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
         body,
         postId: post.id,
       });
-
       dispatch(setComments([...comments, newComment]));
-
-      // setComments([...comments, newComment]);
-      // works wrong if we wrap `addComment` with `useCallback`
-      // because it takes the `comments` cached during the first render
-      // not the actual ones
     } catch (error) {
-      // we show an error message in case of any error
       dispatch(setCommentsError(true));
     }
   };
 
   const deleteComment = async (commentId: number) => {
-    // we delete the comment immediately so as
-    // not to make the user wait long for the actual deletion
     // eslint-disable-next-line max-len
     dispatch(setComments(comments.filter(comment => comment.id !== commentId)));
 

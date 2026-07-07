@@ -19,4 +19,4 @@ export interface State {
     loaded: boolean;
     hasError: boolean;
   };
-};
+}
