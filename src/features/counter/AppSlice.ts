@@ -1,29 +1,31 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { State } from '../../types/State';
 import { User } from '../../types/User';
 import { Post } from '../../types/Post';
 import { Comment } from '../../types/Comment';
+import { APP_SLICE_NAME } from '../../features/counter/config';
 
-const initialState = {
-  users: [] as User[],
-  author: null as User | null,
+const initialState: State = {
+  users: [],
+  author: null,
 
   posts: {
-    items: [] as Post[],
+    items: [],
     loaded: false,
     hasError: false,
   },
 
-  selectedPost: null as Post | null,
+  selectedPost: null,
 
   comments: {
-    items: [] as Comment[],
+    items: [],
     loaded: false,
     hasError: false,
   },
 };
 
 const AppSlice = createSlice({
-  name: 'app',
+  name: APP_SLICE_NAME,
   initialState,
   reducers: {
     /* eslint-disable no-param-reassign */

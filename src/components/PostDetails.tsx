@@ -33,12 +33,12 @@ export const PostDetails: React.FC<Props> = ({ post }) => {
 
     commentsApi
       .getPostComments(post.id)
-      .then(postComments => dispatch(setComments(postComments))) // save the loaded comments
-      .catch(() => dispatch(setCommentsError(true))) // show an error when something went wrong
-      .finally(() => dispatch(setCommentsLoaded(true))); // hide the spinner
+      .then(postComments => dispatch(setComments(postComments)))
+      .catch(() => dispatch(setCommentsError(true)))
+      .finally(() => dispatch(setCommentsLoaded(true))); 
   }
 
-  useEffect(loadComments, [post.id, dispatch]); // we need to reload the comments when the post is changed
+  useEffect(loadComments, [post.id, dispatch]);
 
   // The same useEffect with async/await
   /*
